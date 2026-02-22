@@ -1,6 +1,6 @@
 // 1. List dyal l-mantioujat (Zid hasSize: true/false l kulla wa7ed)
 const myProducts = [
-    { name: 'Velvet Makeup Bag', price: 150, category : "bags" , img: 'product.jpg', desc: 'Un sac élégant.', hasSize: false },
+    { name: 'Velvet Makeup', price: 150, category : "bags" , img: 'product.jpg', desc: 'Un sac élégant.', hasSize: false },
     { name: 'Tech Protection Sleeve', price: 200, category : "tech" , img: 'IMG_1547.jpg', desc: 'Protection maximale.', hasSize: true },
     { name: 'Aesthetic Water Bottle', price: 120, category : "accessories" , img: 'IMG_1548.jpg', desc: 'Restez hydraté.', hasSize: false },
     { name: 'blossom nuha', price: 120, category : "tech" , img: 'IMG_1558.jpg', desc: 'miamii.', hasSize: true }
