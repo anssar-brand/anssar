@@ -597,8 +597,8 @@ nav ul li a:hover,
 
 .close-x-btn {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 15px;
+    right: 15px;
     background: #eeeeee;
     border: none;
     width: 35px;
@@ -621,10 +621,11 @@ nav ul li a:hover,
 
 .cart-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     margin-bottom: 20px;
     position: relative;
+    padding-right: 35px; /*espace de x */
 }
 .cart-header h2 {
     font-family: 'Playfair Display', serif;
@@ -705,7 +706,7 @@ nav ul li a:hover,
     font-size: 22px;
     margin: 20px 0;
     color: var(--primary);
-    border-top: 2px dashed rgba(0,0,0,0.15);
+    border-top: 1px solid rgba(0,0,0,0.1);
     padding-top: 15px;
 }
 
@@ -739,6 +740,14 @@ nav ul li a:hover,
     text-align: left;
     border-top: 1px solid rgba(0,0,0,0.1);
     padding-top: 20px;
+}
+
+#checkout-form-area h3 {
+    text-align: center;
+    margin-bottom: 24px;
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--primary);
 }
 
 .input-group {
