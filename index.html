@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anssar Store</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="promo-banner">
+        <p>✨ Livraison Gratuite pour toute commande de plus de 400 DH! ✨</p>
+    </div>
+    <a href="https://wa.me/212650527938" class="whatsapp-float" target="_blank">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <div id="overlay" class="cart-overlay" onclick="closeCart()"></div>
+
+    <header class="header">
+        <nav class="main-nav">
+    <div class="nav-left">
+        <button class="menu-toggle" id="menuBtn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+    <div class="nav-center">
+        <a href="#" class="logo">ANSSAR</a>
+    </div>
+
+    <div class="nav-right">
+        <a href="#" class="cart-icon" id="cart-nav" onclick="openCart(); return false;">
+    <svg viewBox="0 0 24 24">
+        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6zM3 6h18M16 10a4 4 0 01-8 0" />
+    </svg>
+    <span id="cart-count">0</span>
+</a>
+    </div>
+</nav>
+
+<div class="sidebar" id="sidebar">
+    <button class="close-sidebar">&times;</button>
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Shop</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
+    </ul>
+</div>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>BagMakeup & Tech Accessories</h1>
+            <p>Aesthetic bags and premium covers for your daily life.</p>
+            <a href="#products" class="btn-main">View Collection</a>
+        </div>
+    </section>
+<section id="products">
+    <h2 class="section-title">Our Products</h2>
+    
+    <div class="search-container">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="searchInput" placeholder="Chercher un produit..." onkeyup="searchProducts()">
+    </div>
+
+    <div class="product-grid" id="main-products">
+        </div>
+</section>
+
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeProductModal()">&times;</span>
+            <div class="modal-body">
+                <div class="product-gallery">
+                    <img id="main-modal-img" src="" alt="Product Image">
+                </div>
+                <div class="product-details">
+                    <div class="trust-badges">
+    <div class="badge-item">
+        <i class="fa-solid fa-truck-fast"></i>
+        <span>Livraison Rapide</span>
+    </div>
+    <div class="badge-item">
+        <i class="fa-solid fa-hand-holding-dollar"></i>
+        <span>Paiement à la livraison</span>
+    </div>
+    <div class="badge-item">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>Qualité Garantie</span>
+    </div>
+</div>
+                    <h2 id="modal-title"></h2>
+                    <p class="modal-price" id="modal-price"></p>
+                    <div class="size-selector">
+    <p>Choisir la taille :</p>
+    <div class="size-options">
+        <button class="size-btn" onclick="selectSize('S', this)">S</button>
+        <button class="size-btn" onclick="selectSize('M', this)">M</button>
+        <button class="size-btn" onclick="selectSize('L', this)">L</button>
+    </div>
+    <span id="size-error">Veuillez choisir une taille avant d'ajouter.</span>
+</div>
+                    <p id="modal-desc" class="modal-desc"></p>
+                    <button class="btn-buy" id="modal-add-btn">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section id="cart-section">
+        <div class="cart-container">
+            <div class="cart-header">
+                <h2>Votre Panier</h2>
+                <button onclick="closeCart()" class="close-x-btn">&times;</button>
+            </div>
+            
+            <div id="cart-items">
+                <p class="cart-empty-msg">Votre panier est vide.</p>
+            </div>
+            
+            <p class="total-text"><strong>Total: <span id="total-price">0</span> DH</strong></p>
+
+            <button id="confirm-order-btn" onclick="showCheckoutForm()" style="display: none;">Confirmer la sélection</button>
+
+            <div id="checkout-form-area" style="display: none;">
+                <h3>Informations de Livraison</h3>
+                <form id="order-form">
+                    <div class="input-group">
+                        <label> Nom Complet</label>
+                        <input type="text" id="name" placeholder="Entrez votre nom complet" required>
+                    </div>
+                    <div class="input-group">
+                        <label> Téléphone (WhatsApp)</label>
+                        <input type="tel" id="phone" placeholder="Ex: 06XXXXXXXX" required>
+                    </div>
+                    <div class="input-group">
+                        <label> Ville</label>
+                        <input type="text" id="city" placeholder="Ex: Casablanca" required>
+                    </div>
+                    <div class="input-group">
+                        <label> Adresse complète</label>
+                        <textarea id="address" placeholder="N° maison, Quartier, Rue..." required></textarea>
+                    </div>
+                    <button type="submit" class="whatsapp-btn">Confirmer sur WhatsApp</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact">
+        <div class="footer-container">
+            <div class="footer-info">
+                <div class="logo">ANSSAR</div>
+                <p>Aesthetic gear for your daily lifestyle.</p>
+            </div>
+            <div class="footer-social">
+                <h4>Social Media</h4>
+                <div class="social-icons-row">
+                    <a href="#" target="_blank"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" target="_blank"><i class="fa-brands fa-pinterest"></i></a>
+                    <a href="#" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="#" target="_blank"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="#" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Anssar Store. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
