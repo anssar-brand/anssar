@@ -1,9 +1,9 @@
-// 1. List dyal l-mantioujat (Zid hasSize: true/false l kulla wa7ed)
+// 1. List dyal l-mantioujat (imgs: tableau d'images, img: image principale / fallback)
 const myProducts = [
-    { name: 'Velvet Makeup', price: 150, category : "bags" , img: 'product.jpg', desc: 'Un sac élégant.', hasSize: false },
-    { name: 'Tech Protection Sleeve', price: 200, category : "tech" , img: 'IMG_1547.jpg', desc: 'Protection maximale.', hasSize: true },
-    { name: 'Aesthetic Water Bottle', price: 120, category : "accessories" , img: 'IMG_1548.jpg', desc: 'Restez hydraté.', hasSize: false },
-    { name: 'blossom nuha', price: 120, category : "tech" , img: 'IMG_1558.jpg', desc: 'miamii.', hasSize: true }
+    { name: 'Velvet Makeup Bag', price: 150, category : "bags" , img: 'product.jpg', imgs: ['product.jpg'], desc: 'Un sac élégant.', hasSize: false },
+    { name: 'Tech Protection Sleeve', price: 200, category : "tech" , img: 'IMG_1547.jpg', imgs: ['IMG_1547.jpg'], desc: 'Protection maximale.', hasSize: true },
+    { name: 'Aesthetic Water Bottle', price: 120, category : "accessories" , img: 'IMG_1548.jpg', imgs: ['IMG_1548.jpg'], desc: 'Restez hydraté.', hasSize: false },
+    { name: 'blossom nuha', price: 120, category : "tech" , img: 'IMG_1558.jpg', imgs: ['IMG_1558.jpg'], desc: 'miamii.', hasSize: true }
 ];
 
 let cart = [];
@@ -17,13 +17,13 @@ function displayProducts() {
 
     myProducts.forEach(p => {
         grid.innerHTML += `
-            <div class="product-card" onclick="openProduct('${p.name}')" style="cursor: pointer;">
+            <div class="product-card">
                 <img src="${p.img}" alt="${p.name}">
                 <div class="product-info">
                     <h3>${p.name}</h3>
                     <p class="price">${p.price} DH</p>
                     <div class="product-actions">
-                        <button class="btn-buy">Voir Détails</button>
+                        <button type="button" class="btn-buy" onclick="openProduct('${p.name.replace(/'/g, "\\'")}')">Voir Détails</button>
                         <button type="button" class="quick-add-cart" onclick="quickAddToCart('${p.name.replace(/'/g, "\\'")}', event)" title="Ajouter au panier"><i class="fa-solid fa-cart-plus"></i></button>
                     </div>
                 </div>
@@ -43,7 +43,15 @@ function openProduct(productName) {
     document.getElementById('modal-title').innerText = productData.name;
     document.getElementById('modal-price').innerText = productData.price + " DH";
     document.getElementById('modal-desc').innerText = productData.desc;
-    document.getElementById('main-modal-img').src = productData.img;
+    
+    const images = productData.imgs || [productData.img];
+    const mainImg = document.getElementById('main-modal-img');
+    const galleryScroll = document.getElementById('modal-gallery-scroll');
+    mainImg.src = images[0];
+    
+    galleryScroll.innerHTML = images.map((src, i) => 
+        `<img src="${src}" alt="${productData.name}" class="modal-thumb ${i === 0 ? 'active' : ''}" onclick="selectModalImage(this)">`
+    ).join('');
 
     const sizeSelector = document.querySelector('.size-selector');
     
@@ -78,6 +86,13 @@ function selectSize(size, btn) {
     document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
     document.getElementById('size-error').style.display = 'none';
+}
+
+function selectModalImage(thumbEl) {
+    if (!thumbEl || !thumbEl.src) return;
+    document.getElementById('main-modal-img').src = thumbEl.src;
+    document.querySelectorAll('.modal-thumb').forEach(t => t.classList.remove('active'));
+    thumbEl.classList.add('active');
 }
 
 function closeProductModal() {
@@ -222,13 +237,13 @@ function searchProducts() {
     // N-fichi-w ghir dakchi li lqina
     filtered.forEach(p => {
         grid.innerHTML += `
-            <div class="product-card" onclick="openProduct('${p.name}')" style="cursor: pointer;">
+            <div class="product-card">
                 <img src="${p.img}" alt="${p.name}">
                 <div class="product-info">
                     <h3>${p.name}</h3>
                     <p class="price">${p.price} DH</p>
                     <div class="product-actions">
-                        <button class="btn-buy">Voir Détails</button>
+                        <button type="button" class="btn-buy" onclick="openProduct('${p.name.replace(/'/g, "\\'")}')">Voir Détails</button>
                         <button type="button" class="quick-add-cart" onclick="quickAddToCart('${p.name.replace(/'/g, "\\'")}', event)" title="Ajouter au panier"><i class="fa-solid fa-cart-plus"></i></button>
                     </div>
                 </div>
