@@ -696,7 +696,7 @@ nav ul li a:hover,
 }
 
 .remove-btn:hover {
-    background: transparent;
+    background: rgba(104, 59, 43, 0.12);
     color: var(--primary-dark);
     transform: scale(1.1);
 }
