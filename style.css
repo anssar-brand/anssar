@@ -681,9 +681,9 @@ nav ul li a:hover,
 }
 
 .remove-btn {
-    background: #fff5f5;
+    background: transparent;
     border: none;
-    color: transparent;
+    color: #683B2B;
     width: 35px;
     height: 35px;
     border-radius: 50%;
