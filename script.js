@@ -1,46 +1,135 @@
-// 1. List dyal l-mantioujat (imgs: tableau d'images, img: image principale / fallback)
+// Categories: "bags" | "stickers" | "kids" (vêtements drari sghar)
+const CATEGORY_IDS = { bags: 'grid-bags', stickers: 'grid-stickers', kids: 'grid-kids' };
+const CATEGORY_LABELS = {
+    bags: 'Sacs & Bags',
+    stickers: 'Stickers',
+    kids: 'Vêtements Enfants (Drari Sghar)'
+};
+
+// 1. List dyal l-mantioujat — kol category b 7edha
 const myProducts = [
-    { name: 'Velvet Makeup Bag', price: 150, category : "bags" , img: 'product.jpg', imgs: ['product.jpg'], desc: 'Un sac élégant.', hasSize: false },
-    { name: 'Tech Protection Sleeve', price: 200, category : "tech" , img: 'IMG_1547.jpg', imgs: ['IMG_1547.jpg'], desc: 'Protection maximale.', hasSize: true },
-    { name: 'Aesthetic Water Bottle', price: 120, category : "accessories" , img: 'IMG_1548.jpg', imgs: ['IMG_1548.jpg'], desc: 'Restez hydraté.', hasSize: false },
-    { name: 'blossom nuha', price: 120, category : "tech" , img: 'IMG_1558.jpg', imgs: ['IMG_1558.jpg'], desc: 'miamii.', hasSize: true }
+    // ——— Bags ———
+    { name: 'Velvet Makeup Bag', price: 150, category: 'bags', img: 'product.jpg', imgs: ['product.jpg'], desc: 'Un sac élégant.', hasSize: false },
+    { name: 'Tech Protection Sleeve', price: 200, category: 'bags', img: 'IMG_1547.jpg', imgs: ['IMG_1547.jpg'], desc: 'Protection maximale.', hasSize: true },
+    // ——— Stickers ———
+    { name: 'Sticker Pack Aesthetic', price: 25, category: 'stickers', img: 'product.jpg', imgs: ['product.jpg'], desc: 'Pack de stickers déco.', hasSize: false },
+    { name: 'Sticker Set Kawaii', price: 30, category: 'stickers', img: 'product.jpg', imgs: ['product.jpg'], desc: 'Set stickers mignons.', hasSize: false },
+    // ——— Vêtements Enfants (drari sghar) ———
+    { name: 'T-shirt Enfant Mignon', price: 80, category: 'kids', img: 'product.jpg', imgs: ['product.jpg'], desc: 'T-shirt confort pour les petits.', hasSize: true },
+    { name: 'Robe Enfant Blossom', price: 120, category: 'kids', img: 'IMG_1558.jpg', imgs: ['IMG_1558.jpg'], desc: 'Robe légère pour fillette.', hasSize: true }
 ];
 
 let cart = [];
 let selectedSize = null;
 
-// 2. Function bach t-fichi l-mantioujat
-function displayProducts() {
-    const grid = document.getElementById('main-products');
-    if (!grid) return;
-    grid.innerHTML = ""; 
-
-    myProducts.forEach(p => {
-        grid.innerHTML += `
-            <div class="product-card">
-                <img src="${p.img}" alt="${p.name}">
-                <div class="product-info">
-                    <h3>${p.name}</h3>
-                    <p class="price">${p.price} DH</p>
-                    <div class="product-actions">
-                        <button type="button" class="btn-buy" onclick="openProduct('${p.name.replace(/'/g, "\\'")}')">Voir Détails</button>
-                        <button type="button" class="quick-add-cart" onclick="quickAddToCart('${p.name.replace(/'/g, "\\'")}', event)" title="Ajouter au panier"><i class="fa-solid fa-cart-plus"></i></button>
-                    </div>
+function renderProductCard(p) {
+    const safeName = p.name.replace(/'/g, "\\'");
+    return `
+        <div class="product-card">
+            <img src="${p.img}" alt="${p.name}" loading="lazy">
+            <div class="product-info">
+                <h3>${p.name}</h3>
+                <p class="price">${p.price} DH</p>
+                <div class="product-actions">
+                    <button type="button" class="btn-buy" onclick="openProduct('${safeName}')">Voir Détails</button>
+                    <button type="button" class="quick-add-cart" onclick="quickAddToCart('${safeName}', event)" title="Ajouter au panier"><i class="fa-solid fa-cart-plus"></i></button>
                 </div>
             </div>
-        `;
-    });
+        </div>`;
 }
 
-// 3. Product Modal Logic
-function openProduct(productName) {
-    // N-qalbo 3la l-mantiouj f l-list "myProducts"
-    const productData = myProducts.find(p => p.name === productName);
-    
-    if (!productData) return; // Ila malqahch may-dir walou
+// 2. Bach t-fichi l-mantioujat — kol category f grid mte3ha
+function displayProducts() {
+    const searchRaw = (document.getElementById('searchInput') && document.getElementById('searchInput').value) || '';
+    const search = searchRaw.toLowerCase().trim().replace(/[<>]/g, '');
 
-    document.getElementById('product-modal').style.display = 'flex';
-    document.getElementById('modal-title').innerText = productData.name;
+    const titleEl = document.getElementById('products-title');
+    let activeCategoryLabel = null;
+
+    // Ila kayn search, n9elbo luwlen b smiyat dyal produits
+    let globalNameMatchesByCat = null;
+    if (search) {
+        globalNameMatchesByCat = {};
+        myProducts.forEach(p => {
+            if (p.name.toLowerCase().includes(search)) {
+                if (!globalNameMatchesByCat[p.category]) {
+                    globalNameMatchesByCat[p.category] = [];
+                }
+                globalNameMatchesByCat[p.category].push(p);
+            }
+        });
+    }
+
+    Object.keys(CATEGORY_IDS).forEach(cat => {
+        const grid = document.getElementById(CATEGORY_IDS[cat]);
+        const section = document.getElementById(`section-${cat}`);
+        if (!grid || !section) return;
+
+        const fullList = myProducts.filter(p => p.category === cat);
+        let filtered = fullList;
+
+        if (search) {
+            const nameMatches = (globalNameMatchesByCat && globalNameMatchesByCat[cat]) || [];
+
+            if (nameMatches.length > 0) {
+                const lowerSearch = search;
+                const startsWith = nameMatches.filter(p =>
+                    p.name.toLowerCase().startsWith(lowerSearch)
+                );
+                const nameContains = nameMatches.filter(p =>
+                    !startsWith.includes(p) && p.name.toLowerCase().includes(lowerSearch)
+                );
+                filtered = [...startsWith, ...nameContains];
+            } else {
+                // Makan thta produit b had smiya, njarreb 3la smit l-category
+                const categoryMatched = search.includes(cat.toLowerCase());
+                if (categoryMatched) {
+                    filtered = fullList;
+                    if (!activeCategoryLabel && CATEGORY_LABELS[cat]) {
+                        activeCategoryLabel = CATEGORY_LABELS[cat];
+                    }
+                } else {
+                    filtered = [];
+                }
+            }
+        }
+
+        if (search && filtered.length === 0) {
+            section.style.display = 'none';
+            grid.innerHTML = '';
+        } else {
+            section.style.display = '';
+            const toRender = search ? filtered : fullList;
+            grid.innerHTML = toRender.map(p => renderProductCard(p)).join('');
+        }
+    });
+
+    // Update titre principal 7asab l-search
+    if (titleEl) {
+        if (search && activeCategoryLabel) {
+            titleEl.innerText = activeCategoryLabel;
+        } else {
+            titleEl.innerText = 'Our Products';
+        }
+    }
+}
+
+// 3. Product Detail Page (sf7a khassa)
+function renderProductDetailPage() {
+    const params = new URLSearchParams(window.location.search);
+    const productName = params.get('product');
+    if (!productName) return;
+
+    // Ila ma kaynach had l-page (mafihach had les IDs) n-stoppi
+    const titleEl = document.getElementById('modal-title');
+    if (!titleEl) return;
+
+    const productData = myProducts.find(p => p.name === productName);
+    if (!productData) return;
+
+    document.title = 'Anssar Store - ' + productData.name;
+
+    titleEl.innerText = productData.name;
     document.getElementById('modal-price').innerText = productData.price + " DH";
     document.getElementById('modal-desc').innerText = productData.desc;
     
@@ -48,6 +137,7 @@ function openProduct(productName) {
     const mainImg = document.getElementById('main-modal-img');
     const galleryScroll = document.getElementById('modal-gallery-scroll');
     mainImg.src = images[0];
+    mainImg.alt = productData.name;
     
     galleryScroll.innerHTML = images.map((src, i) => 
         `<img src="${src}" alt="${productData.name}" class="modal-thumb ${i === 0 ? 'active' : ''}" onclick="selectModalImage(this)">`
@@ -67,18 +157,23 @@ function openProduct(productName) {
     // Reset styles
     document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
     document.getElementById('size-error').style.display = 'none';
-    document.body.classList.add('no-scroll');
 
-    // Click dial Add to Cart wast l-modal
+    // Click dial Add to Cart f sf7a dyal produit
     document.getElementById('modal-add-btn').onclick = function() {
         if (!selectedSize && productData.hasSize) {
             document.getElementById('size-error').style.display = 'block';
             return;
         }
         addToCart(productData.name, productData.price, productData.img);
-        closeProductModal();
         openCart();
     };
+}
+
+// 3bis. openProduct daba kat-hawwel l-sf7a khassa
+function openProduct(productName) {
+    const productData = myProducts.find(p => p.name === productName);
+    if (!productData) return;
+    window.location.href = `product.html?product=${encodeURIComponent(productData.name)}`;
 }
 
 function selectSize(size, btn) {
@@ -218,38 +313,9 @@ if (orderForm) {
         window.open(`https://wa.me/212650527938?text=${text}`, '_blank');
     });
 }
+// Recherche: n-filter-iw kol category b 7edha
 function searchProducts() {
-    const input = document.getElementById('searchInput').value.toLowerCase();
-    const grid = document.getElementById('main-products');
-    
-    // N-filter-iw l-list 3la 7ssab chnou ktab l-klyan
-    const filtered = myProducts.filter(p => 
-        p.name.toLowerCase().includes(input)
-    );
-
-    grid.innerHTML = ""; 
-
-    if (filtered.length === 0) {
-        grid.innerHTML = "<p style='grid-column: 1/-1; text-align:center; padding: 50px;'>Aucun produit trouvé.</p>";
-        return;
-    }
-
-    // N-fichi-w ghir dakchi li lqina
-    filtered.forEach(p => {
-        grid.innerHTML += `
-            <div class="product-card">
-                <img src="${p.img}" alt="${p.name}">
-                <div class="product-info">
-                    <h3>${p.name}</h3>
-                    <p class="price">${p.price} DH</p>
-                    <div class="product-actions">
-                        <button type="button" class="btn-buy" onclick="openProduct('${p.name.replace(/'/g, "\\'")}')">Voir Détails</button>
-                        <button type="button" class="quick-add-cart" onclick="quickAddToCart('${p.name.replace(/'/g, "\\'")}', event)" title="Ajouter au panier"><i class="fa-solid fa-cart-plus"></i></button>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
+    displayProducts();
 }
 const menuBtn = document.getElementById('menuBtn');
 const sidebar = document.getElementById('sidebar');
@@ -261,4 +327,10 @@ menuBtn.addEventListener('click', () => {
 
 closeSidebar.addEventListener('click', () => {
     sidebar.classList.remove('active');
+});
+
+// Loader global: index (catalogue) w product.html (détails)
+window.addEventListener('DOMContentLoaded', () => {
+    displayProducts();
+    renderProductDetailPage();
 });
