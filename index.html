@@ -43,10 +43,9 @@
 <div class="sidebar" id="sidebar">
     <button class="close-sidebar">&times;</button>
     <ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Shop</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Contact</a></li>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#products">Shop</a></li>
+        <li><a href="#contact">Contact</a></li>
     </ul>
 </div>
     </header>
@@ -59,20 +58,31 @@
         </div>
     </section>
 <section id="products">
-    <h2 class="section-title">Our Products</h2>
+    <h2 class="section-title" id="products-title">Our Products</h2>
     
     <div class="search-container">
         <i class="fa-solid fa-magnifying-glass"></i>
         <input type="text" id="searchInput" placeholder="Chercher un produit..." onkeyup="searchProducts()">
     </div>
 
-    <div class="product-grid" id="main-products">
-        </div>
+    <div class="category-section" id="section-bags">
+        <h3 class="category-title">Sacs & Bags</h3>
+        <div class="product-grid" id="grid-bags"></div>
+    </div>
+
+    <div class="category-section" id="section-stickers">
+        <h3 class="category-title">Stickers</h3>
+        <div class="product-grid" id="grid-stickers"></div>
+    </div>
+
+    <div class="category-section" id="section-kids">
+        <h3 class="category-title">Vêtements Enfants (Drari Sghar)</h3>
+        <div class="product-grid" id="grid-kids"></div>
+    </div>
 </section>
 
     <div id="product-modal" class="modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeProductModal()">&times;</span>
             <div class="modal-body">
                 <div class="product-gallery">
                     <div class="product-gallery-main">
@@ -81,6 +91,18 @@
                     <div class="product-gallery-thumbs" id="modal-gallery-scroll"></div>
                 </div>
                 <div class="product-details">
+                    <h2 id="modal-title"></h2>
+                    <p class="modal-price" id="modal-price"></p>
+                    <div class="size-selector">
+    <p>Choisir la taille :</p>
+    <div class="size-options">
+        <button class="size-btn" onclick="selectSize('S', this)">S</button>
+        <button class="size-btn" onclick="selectSize('M', this)">M</button>
+        <button class="size-btn" onclick="selectSize('L', this)">L</button>
+    </div>
+    <span id="size-error">Veuillez choisir une taille avant d'ajouter.</span>
+</div>
+                    <p id="modal-desc" class="modal-desc"></p>
                     <div class="trust-badges">
     <div class="badge-item">
         <i class="fa-solid fa-truck-fast"></i>
@@ -95,18 +117,6 @@
         <span>Qualité Garantie</span>
     </div>
 </div>
-                    <h2 id="modal-title"></h2>
-                    <p class="modal-price" id="modal-price"></p>
-                    <div class="size-selector">
-    <p>Choisir la taille :</p>
-    <div class="size-options">
-        <button class="size-btn" onclick="selectSize('S', this)">S</button>
-        <button class="size-btn" onclick="selectSize('M', this)">M</button>
-        <button class="size-btn" onclick="selectSize('L', this)">L</button>
-    </div>
-    <span id="size-error">Veuillez choisir une taille avant d'ajouter.</span>
-</div>
-                    <p id="modal-desc" class="modal-desc"></p>
                     <button class="btn-buy" id="modal-add-btn">Add to Cart</button>
                 </div>
             </div>
