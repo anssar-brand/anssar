@@ -72,19 +72,18 @@ nav, .main-nav {
 
 .nav-center .logo,
 .logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 32px;
-    font-weight: 900;
+    font-family: 'Poppins', sans-serif;
+    font-size: 26px;
+    font-weight: 500;
     color: var(--primary);
-    letter-spacing: 0;
+    letter-spacing: 0.35em;
     text-transform: uppercase;
     text-decoration: none;
 }
 
 .nav-center .logo {
-    font-size: 24px;
-    font-weight: 700;
-    letter-spacing: 2px;
+    font-size: 22px;
+    margin-left: 6px;
 }
 
 nav ul {
@@ -338,10 +337,56 @@ nav ul li a:hover,
     text-align: center;
 }
 
+.product-detail-main {
+    padding: 80px 8%;
+}
+
+.product-detail-main .modal-body {
+    align-items: flex-start;
+}
+
+.product-detail-main .product-details {
+    text-align: left;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+}
+
 .section-title {
     font-family: 'Playfair Display', serif;
     margin-bottom: 50px;
     font-size: 36px;
+}
+
+.category-section {
+    margin-top: 40px;
+    text-align: left;
+}
+
+.category-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.category-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(104, 59, 43, 0.25);
+}
+
+.category-empty {
+    color: #999;
+    font-size: 14px;
+    text-align: center;
+    padding: 20px 0;
 }
 
 .product-grid {
@@ -404,7 +449,7 @@ nav ul li a:hover,
     border: none;
     background: var(--primary);
     color: white;
-    padding: 12px;
+    padding: 12px 14px;
     border-radius: 12px;
     font-weight: 600;
     cursor: pointer;
@@ -413,8 +458,8 @@ nav ul li a:hover,
 
 .product-actions .btn-buy {
     flex: 1;
-    padding: 6px 10px;
-    font-size: 11px;
+    padding: 10px 14px;
+    font-size: 13px;
     border-radius: 8px;
 }
 
@@ -501,13 +546,14 @@ nav ul li a:hover,
 
 .modal-content {
     background-color: var(--bg);
-    margin: auto;
-    padding: 30px;
-    border-radius: 20px;
-    width: 90%;
-    max-width: 800px;
+    margin: 0;
+    padding: 20px 16px 24px;
+    border-radius: 0;
+    width: 100%;
+    max-width: none;
     position: relative;
-    max-height: 90vh;
+    height: 100%;
+    max-height: 100vh;
     overflow-y: auto;
 }
 
@@ -895,6 +941,10 @@ nav ul li a:hover,
     gap: 10px;
 }
 
+.product-details .btn-buy {
+    margin-top: 24px;
+}
+
 .badge-item {
     flex: 1;
     display: flex;
@@ -1091,9 +1141,7 @@ footer p {
         padding: 10px;
     }
     .modal-content {
-        width: 95%;
-        padding: 20px;
-        border-radius: 15px;
+        padding: 16px 12px 24px;
     }
     .product-grid {
         display: grid;
@@ -1139,8 +1187,8 @@ footer p {
     }
     .btn-buy {
         width: 100%;
-        padding: 10px;
-        font-size: 14px;
+        padding: 14px;
+        font-size: 15px;
     }
 }
 
