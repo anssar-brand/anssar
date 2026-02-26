@@ -9,7 +9,7 @@ const CATEGORY_LABELS = {
 // 1. List dyal l-mantioujat — kol category b 7edha
 const myProducts = [
     // ——— Bags ———
-    { name: 'Velvet Makeup Bag', price: 150, category: 'bags', img: 'product.jpg', imgs: ['product.jpg'], desc: 'Un sac élégant.', hasSize: false },
+    { name: 'Velvet Makeup ', price: 150, category: 'bags', img: 'product.jpg', imgs: ['product.jpg'], desc: 'Un sac élégant.', hasSize: false },
     { name: 'Tech Protection Sleeve', price: 200, category: 'bags', img: 'IMG_1547.jpg', imgs: ['IMG_1547.jpg'], desc: 'Protection maximale.', hasSize: true },
     // ——— Stickers ———
     { name: 'Sticker Pack Aesthetic', price: 25, category: 'stickers', img: 'product.jpg', imgs: ['product.jpg'], desc: 'Pack de stickers déco.', hasSize: false },
