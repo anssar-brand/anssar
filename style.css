@@ -502,13 +502,14 @@ nav ul li a:hover,
 }
 
 .size-btn {
-    width: 45px;
-    height: 45px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    border: 1px solid #333;
+    border: 1px solid rgba(0,0,0,0.3);
     background: white;
     cursor: pointer;
     font-weight: 600;
+    font-size: 13px;
     font-family: 'Poppins', sans-serif;
     transition: 0.3s;
 }
@@ -518,8 +519,9 @@ nav ul li a:hover,
 }
 
 .size-btn.selected {
-    background: black;
+    background: var(--primary);
     color: white;
+    border-color: var(--primary);
 }
 
 #size-error {
@@ -690,15 +692,15 @@ nav ul li a:hover,
 
 .close-x-btn {
     position: absolute;
-    top: 15px;
-    right: 15px;
+    top: 8px;
+    right: 12px;
     background: #eeeeee;
     border: none;
-    width: 35px;
-    height: 35px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     cursor: pointer;
-    font-size: 20px;
+    font-size: 16px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -718,7 +720,7 @@ nav ul li a:hover,
     align-items: center;
     margin-bottom: 20px;
     position: relative;
-    padding-right: 35px; /* espace pour le X */
+    padding-right: 28px;
 }
 .cart-header h2 {
     font-family: 'Playfair Display', serif;
@@ -885,24 +887,23 @@ nav ul li a:hover,
     border-color: rgba(0,0,0,0.15);
 }
 
-.whatsapp-btn {
+.confirm-order-submit-btn {
     width: 100%;
-    padding: 18px;
-    background: #25D366;
+    padding: 16px;
+    background: var(--primary);
     color: white;
     border: none;
-    border-radius: 15px;
-    font-size: 17px;
-    font-weight: 700;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
     margin-top: 10px;
-    box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2);
     transition: 0.3s;
 }
 
-.whatsapp-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 25px rgba(37, 211, 102, 0.3);
+.confirm-order-submit-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
 }
 
 /* ========== WHATSAPP FLOAT ========== */
@@ -1204,4 +1205,85 @@ footer p {
         font-size: 13px;
         padding: 5px 10px;
     }
+}
+
+/* ========== ORDER SUCCESS MODAL ========== */
+.order-success-box {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+}
+
+.order-success-card {
+    background: #ffffff;
+    padding: 30px 24px;
+    border-radius: 18px;
+    max-width: 380px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.order-success-card h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--primary);
+}
+
+.order-success-card p {
+    margin: 4px 0;
+    color: #555;
+    font-size: 14px;
+}
+
+.order-success-card .order-id {
+    margin: 14px auto 18px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: #faf6f2;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--primary-dark);
+    word-break: break-all;
+}
+
+.order-success-whatsapp-btn {
+    display: block;
+    width: 100%;
+    padding: 14px 24px;
+    border-radius: 12px;
+    border: none;
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 8px;
+}
+
+.order-success-whatsapp-btn:hover {
+    background: var(--primary-dark);
+}
+
+.order-success-close {
+    padding: 10px 20px;
+    border-radius: 999px;
+    border: none;
+    background: var(--primary);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.order-success-close:hover {
+    background: var(--primary-dark);
 }
