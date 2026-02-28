@@ -22,9 +22,12 @@ import {
 // Pour éviter l'erreur 400 (identitytoolkit) : dans la Console Firebase →
 // Authentication → Sign-in method → activer "E-mail/Mot de passe".
 const firebaseConfig = {
-  apiKey: "AIzaSyDkcYc7-WM_bq4UZqNPhh3RruTWPg7H51M",
+  // Blasat mat-kteb l-key direct, kteb had l-code:
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY, 
+  
   authDomain: "anssar-brand.firebaseapp.com",
   projectId: "anssar-brand",
+  // ... l-baqi khlih kima houwa
   storageBucket: "anssar-brand.firebasestorage.app",
   messagingSenderId: "336874521717",
   appId: "1:336874521717:web:459a591c52bf7f8a11e43c",
