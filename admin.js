@@ -1,7 +1,7 @@
 import {
   db,
   auth,
-  collection,
+  collection, 
   onSnapshot,
   orderBy,
   query,
