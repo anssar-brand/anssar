@@ -1,29 +1,37 @@
-// Categories: "bags" | "stickers" | "kids" (vêtements drari sghar)
+import { db, collection, addDoc, serverTimestamp } from "./firebase.js";
+
+// Categories: "bags" | "stickers" | "kids"
 const CATEGORY_IDS = { bags: 'grid-bags', stickers: 'grid-stickers', kids: 'grid-kids' };
 const CATEGORY_LABELS = {
     bags: 'Sacs & Bags',
     stickers: 'Stickers',
-    kids: 'Vêtements Enfants (Drari Sghar)'
+    kids: 'Vêtements Enfants',
 };
 
-// 1. List dyal l-mantioujat — kol category b 7edha
-const myProducts = [
-    // ——— Bags ———
-    { name: 'Velvet Makeup ', price: 150, category: 'bags', img: 'product.jpg', imgs: ['product.jpg'], desc: 'Un sac élégant.', hasSize: false },
-    { name: 'Tech Protection Sleeve', price: 200, category: 'bags', img: 'IMG_1547.jpg', imgs: ['IMG_1547.jpg'], desc: 'Protection maximale.', hasSize: true },
-    // ——— Stickers ———
-    { name: 'Sticker Pack Aesthetic', price: 25, category: 'stickers', img: 'product.jpg', imgs: ['product.jpg'], desc: 'Pack de stickers déco.', hasSize: false },
-    { name: 'Sticker Set Kawaii', price: 30, category: 'stickers', img: 'product.jpg', imgs: ['product.jpg'], desc: 'Set stickers mignons.', hasSize: false },
-    // ——— Vêtements Enfants (drari sghar) ———
-    { name: 'T-shirt Enfant Mignon', price: 80, category: 'kids', img: 'product.jpg', imgs: ['product.jpg'], desc: 'T-shirt confort pour les petits.', hasSize: true },
-    { name: 'Robe Enfant Blossom', price: 120, category: 'kids', img: 'IMG_1558.jpg', imgs: ['IMG_1558.jpg'], desc: 'Robe légère pour fillette.', hasSize: true }
+// Produits: une seule ligne par produit. Format: nom|prix|category|img|desc|hasSize
+// imgs = [img] par défaut. Pour plusieurs images: img1.jpg,img2.jpg
+const PRODUCTS_RAW = [
+    'Velvet Makeup|150|bags|product.jpg|Un sac élégant.|false',
+    'Tech Protection Sleeve|200|bags|IMG_1547.jpg|Protection maximale.|true',
+    'Sticker Pack Aesthetic|25|stickers|product.jpg|Pack de stickers déco.|false',
+    'Sticker Set Kawaii|30|stickers|product.jpg|Set stickers mignons.|false',
+    'T-shirt Enfant Mignon|80|kids|product.jpg|T-shirt confort pour les petits.|true',
+    'Robe Enfant Blossom|120|kids|IMG_1558.jpg|Robe légère pour fillette.|true',
 ];
+
+function parseProduct(str) {
+    const [name, price, category, img, desc, hasSize] = str.split('|');
+    const imgs = img.includes(',') ? img.split(',') : [img];
+    return { name: name.trim(), price: Number(price), category, img: imgs[0], imgs, desc, hasSize: hasSize === 'true' };
+}
+
+const myProducts = PRODUCTS_RAW.map(parseProduct);
 
 let cart = [];
 let selectedSize = null;
 
 function renderProductCard(p) {
-    const safeName = p.name.replace(/'/g, "\\'");
+    var safeName = p.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     return `
         <div class="product-card">
             <img src="${p.img}" alt="${p.name}" loading="lazy">
@@ -146,27 +154,33 @@ function renderProductDetailPage() {
     const sizeSelector = document.querySelector('.size-selector');
     
     // Logic dyal Taille
-    if (productData.hasSize === false) {
-        sizeSelector.style.display = 'none'; 
-        selectedSize = "Unique"; 
-    } else {
-        sizeSelector.style.display = 'block';
-        selectedSize = null; 
+    if (sizeSelector) {
+        if (productData.hasSize === false) {
+            sizeSelector.style.display = 'none'; 
+            selectedSize = "Unique"; 
+        } else {
+            sizeSelector.style.display = 'block';
+            selectedSize = null; 
+        }
     }
 
     // Reset styles
     document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('selected'));
-    document.getElementById('size-error').style.display = 'none';
+    var sizeError = document.getElementById('size-error');
+    if (sizeError) sizeError.style.display = 'none';
 
     // Click dial Add to Cart f sf7a dyal produit
-    document.getElementById('modal-add-btn').onclick = function() {
-        if (!selectedSize && productData.hasSize) {
-            document.getElementById('size-error').style.display = 'block';
-            return;
-        }
-        addToCart(productData.name, productData.price, productData.img);
-        openCart();
-    };
+    var modalAddBtn = document.getElementById('modal-add-btn');
+    if (modalAddBtn) {
+        modalAddBtn.onclick = function() {
+            if (!selectedSize && productData.hasSize) {
+                if (sizeError) sizeError.style.display = 'block';
+                return;
+            }
+            addToCart(productData.name, productData.price, productData.img);
+            openCart();
+        };
+    }
 }
 
 // 3bis. openProduct daba kat-hawwel l-sf7a khassa
@@ -191,7 +205,9 @@ function selectModalImage(thumbEl) {
 }
 
 function closeProductModal() {
-    document.getElementById('product-modal').style.display = 'none';
+    var modal = document.getElementById('product-modal');
+    if (!modal) return;
+    modal.style.display = 'none';
     document.body.classList.remove('no-scroll');
 }
 
@@ -218,20 +234,20 @@ function quickAddToCart(productName, ev) {
 }
 
 function updateCartDisplay() {
-    const cartCountSpan = document.getElementById('cart-count'); // Drna focus 3la l-count bo7dou
+    const cartCountSpan = document.getElementById('cart-count');
     const cartItemsDiv = document.getElementById('cart-items');
     const totalPriceSpan = document.getElementById('total-price');
     const confirmBtn = document.getElementById('confirm-order-btn');
 
-    // 1. Update l-count bla ma n-mshou l-icon d l-bag
+    if (!cartItemsDiv) return;
     if (cartCountSpan) {
         cartCountSpan.innerText = cart.length;
     }
 
     if (cart.length === 0) {
         cartItemsDiv.innerHTML = "<p class='cart-empty-msg'>Votre panier est vide.</p>";
-        totalPriceSpan.innerText = "0";
-        confirmBtn.style.display = "none";
+        if (totalPriceSpan) totalPriceSpan.innerText = "0";
+        if (confirmBtn) confirmBtn.style.display = "none";
     } else {
         cartItemsDiv.innerHTML = "";
         let total = 0;
@@ -251,8 +267,8 @@ function updateCartDisplay() {
                     </button>
                 </div>`;
         });
-        totalPriceSpan.innerText = total;
-        confirmBtn.style.display = "block";
+        if (totalPriceSpan) totalPriceSpan.innerText = total;
+        if (confirmBtn) confirmBtn.style.display = "block";
     }
 }
 
@@ -262,16 +278,22 @@ function removeFromCart(index) {
 }
 
 function openCart() {
-    document.getElementById('cart-section').style.display = 'block';
-    document.getElementById('overlay').style.display = 'block';
-    document.body.classList.add('no-scroll'); 
+    var cartSection = document.getElementById('cart-section');
+    var overlay = document.getElementById('overlay');
+    if (!cartSection || !overlay) return;
+    cartSection.style.display = 'block';
+    overlay.style.display = 'block';
+    document.body.classList.add('no-scroll');
     updateCartDisplay();
 }
 
 function closeCart() {
-    document.getElementById('cart-section').style.display = 'none';
-    document.getElementById('overlay').style.display = 'none';
-    document.getElementById('checkout-form-area').style.display = 'none';
+    var cartSection = document.getElementById('cart-section');
+    var overlay = document.getElementById('overlay');
+    var formArea = document.getElementById('checkout-form-area');
+    if (cartSection) cartSection.style.display = 'none';
+    if (overlay) overlay.style.display = 'none';
+    if (formArea) formArea.style.display = 'none';
     document.body.classList.remove('no-scroll');
 }
 
@@ -288,29 +310,121 @@ function showToast(message) {
 
 // WhatsApp & Forms
 function showCheckoutForm() {
-    document.getElementById('checkout-form-area').style.display = 'block';
-    document.getElementById('confirm-order-btn').style.display = 'none';
+    var formArea = document.getElementById('checkout-form-area');
+    var confirmBtn = document.getElementById('confirm-order-btn');
+    if (formArea) formArea.style.display = 'block';
+    if (confirmBtn) confirmBtn.style.display = 'none';
 }
 
 window.onload = displayProducts;
 
 window.onclick = function(event) {
-    if (event.target == document.getElementById('product-modal')) closeProductModal();
-    if (event.target == document.getElementById('overlay')) closeCart();
-}
+    var modal = document.getElementById('product-modal');
+    if (modal && event.target === modal) closeProductModal();
+    if (event.target === document.getElementById('overlay')) closeCart();
+};
 
 const orderForm = document.getElementById('order-form');
+const successBoxId = 'order-success-box';
+const WHATSAPP_NUMBER = '212650527938';
+
+function showOrderSuccess(orderId) {
+    let box = document.getElementById(successBoxId);
+    if (!box) {
+        box = document.createElement('div');
+        box.id = successBoxId;
+        box.className = 'order-success-box';
+        document.body.appendChild(box);
+    }
+    box.innerHTML = `
+        <div class="order-success-card">
+            <h3>Commande confirmée ✅</h3>
+            <p>Merci pour votre confiance !</p>
+            <p>Votre <strong>numéro de commande</strong> est :</p>
+            <div class="order-id">${orderId}</div>
+            <button type="button" class="order-success-whatsapp-btn">Continuer vers WhatsApp</button>
+        </div>
+    `;
+    box.style.display = 'flex';
+    const whatsappBtn = box.querySelector('.order-success-whatsapp-btn');
+    if (whatsappBtn) {
+        whatsappBtn.onclick = () => {
+            var msg = 'Assalamo alaykum Anssar , أنا أؤكد طلبي الذي سجلته الآن في الموقع';
+            var url = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(msg);
+            window.open(url, '_blank');
+            box.style.display = 'none';
+        };
+    }
+}
+
+/**
+ * Envoi de la commande : 1) Sauvegarde Firebase uniquement, 2) Affichage du modal "Commande confirmée" avec bouton WhatsApp.
+ * WhatsApp ne s'ouvre qu'au clic sur "Continuer vers WhatsApp" dans le modal.
+ */
+window.sendOrder = async function sendOrder() {
+    var nameEl = document.getElementById('name');
+    var phoneEl = document.getElementById('phone');
+    var cityEl = document.getElementById('city');
+    var addressEl = document.getElementById('address');
+
+    var name = nameEl ? nameEl.value.trim() : '';
+    var phone = phoneEl ? phoneEl.value.trim() : '';
+    var city = cityEl ? cityEl.value.trim() : '';
+    var address = addressEl ? addressEl.value.trim() : '';
+
+    if (!cart || cart.length === 0) {
+        showToast("Votre panier est vide.");
+        return;
+    }
+    if (!name || !phone || !city || !address) {
+        showToast("Veuillez remplir tous les champs du formulaire.");
+        return;
+    }
+
+    var products = cart.map(function(item) {
+        return { name: item.name, price: item.price };
+    });
+    var total = cart.reduce(function(sum, item) {
+        return sum + item.price;
+    }, 0);
+
+    var orderId = null;
+
+    console.log('[sendOrder] Début - avant sauvegarde Firebase');
+    try {
+        var docRef = await addDoc(collection(db, 'orders'), {
+            customerName: name,
+            phone: phone,
+            city: city,
+            address: address,
+            products: products,
+            total: total,
+            status: 'pending',
+            createdAt: serverTimestamp()
+        });
+        orderId = docRef.id;
+        console.log('[sendOrder] Firebase sauvegardé avec succès, orderId:', orderId);
+    } catch (err) {
+        console.error('[sendOrder] Erreur Firebase:', err);
+        showToast("Une erreur est survenue. Veuillez réessayer.");
+        return;
+    }
+
+    // Fermer le panier, nettoyer, puis afficher le modal confirmation (sans ouvrir WhatsApp)
+    closeCart();
+    cart.length = 0;
+    updateCartDisplay();
+    if (orderForm) {
+        orderForm.reset();
+    }
+    showOrderSuccess(orderId);
+    showToast("Commande enregistrée !");
+};
+
 if (orderForm) {
     orderForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        const name = document.getElementById('name').value;
-        const phone = document.getElementById('phone').value;
-        const city = document.getElementById('city').value;
-        const address = document.getElementById('address').value;
-        let productList = cart.map(item => `- ${item.name} (${item.price} DH)`).join('%0A');
-        let total = cart.reduce((sum, item) => sum + item.price, 0);
-        const text = `*NOUVELLE COMMANDE - ANSSAR*%0A%0A*Produits:*%0A${productList}%0A%0A*Total:* ${total} DH%0A%0A👤 *Nom:* ${name}%0A📍 *Ville:* ${city}%0A📞 *Tél:* ${phone}%0A🏠 *Adresse:* ${address}`;
-        window.open(`https://wa.me/212650527938?text=${text}`, '_blank');
+        window.sendOrder();
     });
 }
 // Recherche: n-filter-iw kol category b 7edha
@@ -321,13 +435,28 @@ const menuBtn = document.getElementById('menuBtn');
 const sidebar = document.getElementById('sidebar');
 const closeSidebar = document.querySelector('.close-sidebar');
 
-menuBtn.addEventListener('click', () => {
-    sidebar.classList.add('active');
-});
+if (menuBtn) {
+    menuBtn.addEventListener('click', () => {
+        sidebar && sidebar.classList.add('active');
+    });
+}
+if (closeSidebar) {
+    closeSidebar.addEventListener('click', () => {
+        sidebar && sidebar.classList.remove('active');
+    });
+}
 
-closeSidebar.addEventListener('click', () => {
-    sidebar.classList.remove('active');
-});
+// Exposer les fonctions dans le scope global pour les attributs onclick/onkeyup du HTML
+window.openProduct = openProduct;
+window.quickAddToCart = quickAddToCart;
+window.openCart = openCart;
+window.closeCart = closeCart;
+window.selectSize = selectSize;
+window.selectModalImage = selectModalImage;
+window.closeProductModal = closeProductModal;
+window.showCheckoutForm = showCheckoutForm;
+window.removeFromCart = removeFromCart;
+window.searchProducts = searchProducts;
 
 // Loader global: index (catalogue) w product.html (détails)
 window.addEventListener('DOMContentLoaded', () => {
