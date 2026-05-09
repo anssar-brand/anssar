@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin - My Orders</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
+        .order-card { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .btn-print { background: #683B2B; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; }
+        .btn-delete { background: #ff4d4d; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; margin-left: 5px; }
+    </style>
+</head>
+<body>
+    <h2>Gestion des Commandes (Local)</h2>
+    <div id="orders-list"></div>
+
+    <script>
+        function loadOrders() {
+            const list = document.getElementById('orders-list');
+            const orders = JSON.parse(localStorage.getItem('myOrders') || '[]');
+            list.innerHTML = orders.length === 0 ? '<p>Aucune commande pour le moment.</p>' : '';
+            
+            orders.forEach((order, index) => {
+                list.innerHTML += `
+                    <div class="order-card">
+                        <div>
+                            <strong>${order.name}</strong> (${order.city}) - ${order.total} DH<br>
+                            <small>${order.date} | ${order.products}</small>
+                        </div>
+                        <div>
+                            <button class="btn-print" onclick="printOrder(${index})">Imprimer</button>
+                            <button class="btn-delete" onclick="deleteOrder(${index})">X</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function printOrder(index) {
+            const orders = JSON.parse(localStorage.getItem('myOrders') || '[]');
+            const o = orders[index];
+            const url = `print-label.html?name=${encodeURIComponent(o.name)}&phone=${encodeURIComponent(o.phone)}&city=${encodeURIComponent(o.city)}&address=${encodeURIComponent(o.address)}&total=${o.total}&products=${encodeURIComponent(o.products)}`;
+            window.open(url, '_blank');
+        }
+
+        function deleteOrder(index) {
+            let orders = JSON.parse(localStorage.getItem('myOrders') || '[]');
+            orders.splice(index, 1);
+            localStorage.setItem('myOrders', JSON.stringify(orders));
+            loadOrders();
+        }
+
+        window.onload = loadOrders;
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html>
+<head>
+    <title>Admin - My Orders</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
+        .order-card { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .btn-print { background: #683B2B; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; }
+        .btn-delete { background: #ff4d4d; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; margin-left: 5px; }
+    </style>
+</head>
+<body>
+    <h2>Gestion des Commandes (Local)</h2>
+    <div id="orders-list"></div>
+
+    <script>
+        function loadOrders() {
+            const list = document.getElementById('orders-list');
+            const orders = JSON.parse(localStorage.getItem('myOrders') || '[]');
+            list.innerHTML = orders.length === 0 ? '<p>Aucune commande pour le moment.</p>' : '';
+            
+            orders.forEach((order, index) => {
+                list.innerHTML += `
+                    <div class="order-card">
+                        <div>
+                            <strong>${order.name}</strong> (${order.city}) - ${order.total} DH<br>
+                            <small>${order.date} | ${order.products}</small>
+                        </div>
+                        <div>
+                            <button class="btn-print" onclick="printOrder(${index})">Imprimer</button>
+                            <button class="btn-delete" onclick="deleteOrder(${index})">X</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function printOrder(index) {
+            const orders = JSON.parse(localStorage.getItem('myOrders') || '[]');
+            const o = orders[index];
+            const url = `print-label.html?name=${encodeURIComponent(o.name)}&phone=${encodeURIComponent(o.phone)}&city=${encodeURIComponent(o.city)}&address=${encodeURIComponent(o.address)}&total=${o.total}&products=${encodeURIComponent(o.products)}`;
+            window.open(url, '_blank');
+        }
+
+        function deleteOrder(index) {
+            let orders = JSON.parse(localStorage.getItem('myOrders') || '[]');
+            orders.splice(index, 1);
+            localStorage.setItem('myOrders', JSON.stringify(orders));
+            loadOrders();
+        }
+
+        window.onload = loadOrders;
+    </script>
+</body>
+</html>
