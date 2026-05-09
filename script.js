@@ -1,4 +1,4 @@
-import { db, collection, addDoc, serverTimestamp } from "./firebase.js";
+
 
 // Categories: "bags" | "stickers" | "kids"
 const CATEGORY_IDS = { bags: 'grid-bags', stickers: 'grid-stickers', kids: 'grid-kids' };
@@ -357,20 +357,16 @@ function showOrderSuccess(orderId) {
     }
 }
 
-/**
- * Envoi de la commande : 1) Sauvegarde Firebase uniquement, 2) Affichage du modal "Commande confirmée" avec bouton WhatsApp.
- * WhatsApp ne s'ouvre qu'au clic sur "Continuer vers WhatsApp" dans le modal.
- */
-window.sendOrder = async function sendOrder() {
-    var nameEl = document.getElementById('name');
-    var phoneEl = document.getElementById('phone');
-    var cityEl = document.getElementById('city');
-    var addressEl = document.getElementById('address');
+window.sendOrder = function sendOrder() {
+    const nameEl = document.getElementById('name');
+    const phoneEl = document.getElementById('phone');
+    const cityEl = document.getElementById('city');
+    const addressEl = document.getElementById('address');
 
-    var name = nameEl ? nameEl.value.trim() : '';
-    var phone = phoneEl ? phoneEl.value.trim() : '';
-    var city = cityEl ? cityEl.value.trim() : '';
-    var address = addressEl ? addressEl.value.trim() : '';
+    const name = nameEl ? nameEl.value.trim() : '';
+    const phone = phoneEl ? phoneEl.value.trim() : '';
+    const city = cityEl ? cityEl.value.trim() : '';
+    const address = addressEl ? addressEl.value.trim() : '';
 
     if (!cart || cart.length === 0) {
         showToast("Votre panier est vide.");
@@ -381,44 +377,60 @@ window.sendOrder = async function sendOrder() {
         return;
     }
 
-    var products = cart.map(function(item) {
-        return { name: item.name, price: item.price };
-    });
-    var total = cart.reduce(function(sum, item) {
-        return sum + item.price;
-    }, 0);
+    const total = cart.reduce((sum, item) => sum + item.price, 0);
+    const productsList = cart.map(item => item.name).join(', ');
 
-    var orderId = null;
+    // --- A. SJEL L-DATA F L-PC (LOCAL STORAGE) ---
+    const orderId = 'ORD-' + Date.now(); // Raqm commande jdid
+    const newOrder = {
+        id: orderId,
+        customerName: name,
+        phone: phone,
+        city: city,
+        address: address,
+        products: cart.map(item => ({ name: item.name, price: item.price })),
+        total: total,
+        date: new Date().toLocaleString()
+    };
 
-    console.log('[sendOrder] Début - avant sauvegarde Firebase');
-    try {
-        var docRef = await addDoc(collection(db, 'orders'), {
-            customerName: name,
-            phone: phone,
-            city: city,
-            address: address,
-            products: products,
-            total: total,
-            status: 'pending',
-            createdAt: serverTimestamp()
-        });
-        orderId = docRef.id;
-        console.log('[sendOrder] Firebase sauvegardé avec succès, orderId:', orderId);
-    } catch (err) {
-        console.error('[sendOrder] Erreur Firebase:', err);
-        showToast("Une erreur est survenue. Veuillez réessayer.");
-        return;
-    }
+    let orders = JSON.parse(localStorage.getItem('myOrders') || '[]');
+    orders.push(newOrder);
+    localStorage.setItem('myOrders', JSON.stringify(orders));
 
-    // Fermer le panier, nettoyer, puis afficher le modal confirmation (sans ouvrir WhatsApp)
+    // --- B. SIYFET L-WHATSAPP ---
+    const message = `*Nouvelle Commande - Anssar Store*\n\n` +
+                  `*Nom:* ${name}\n` +
+                  `*Tél:* ${phone}\n` +
+                  `*Ville:* ${city}\n` +
+                  `*Adresse:* ${address}\n\n` +
+                  `*Articles:* ${productsList}\n` +
+                  `*Total:* ${total} DH`;
+
+    const whatsappUrl = `https://wa.me/212650527938?text=${encodeURIComponent(message)}`;
+
+    // Nqiw l-panier w n-seddouh
     closeCart();
     cart.length = 0;
     updateCartDisplay();
-    if (orderForm) {
-        orderForm.reset();
+    if (document.getElementById('order-form')) {
+        document.getElementById('order-form').reset();
     }
+
+    // N-7ellu l-modal d-naja7 (li fih bouton WhatsApp)
     showOrderSuccess(orderId);
     showToast("Commande enregistrée !");
+
+    // Khzini l-URL d-whatsapp f l-bouton dyal l-modal success
+    setTimeout(() => {
+        const successWhatsappBtn = document.querySelector('.order-success-whatsapp-btn');
+        if (successWhatsappBtn) {
+            successWhatsappBtn.onclick = () => {
+                window.open(whatsappUrl, '_blank');
+                const box = document.getElementById('order-success-box');
+                if (box) box.style.display = 'none';
+            };
+        }
+    }, 500);
 };
 
 if (orderForm) {
